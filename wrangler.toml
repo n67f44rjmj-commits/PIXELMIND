@@ -1,0 +1,7 @@
+
+name = "pixelmind"
+main = "src/index.js"
+compatibility_date = "2026-10-14"
+
+[ai]
+binding = "AI"
