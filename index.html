@@ -1,1 +1,258 @@
-h
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b14">
+  <title>PixelMind AI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0b14;
+      --panel: #141422;
+      --line: #292943;
+      --purple: #9b7cff;
+      --cyan: #63e6ff;
+      --text: #f4f2ff;
+      --muted: #aaa9c4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at top, #211442, var(--bg) 55%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      padding: 22px 16px 15px;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+    }
+    .logo {
+      font-size: 27px;
+      font-weight: 850;
+      letter-spacing: -1px;
+    }
+    .logo span { color: var(--purple); }
+    header p { color: var(--muted); margin: 8px 0 0; font-size: 13px; }
+    main { max-width: 850px; margin: auto; padding: 16px; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    button, textarea {
+      font: inherit;
+    }
+    .tab {
+      flex: 1;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: var(--panel);
+      padding: 13px 8px;
+      border-radius: 13px;
+      cursor: pointer;
+    }
+    .tab.active {
+      color: white;
+      border-color: var(--purple);
+      background: #292044;
+    }
+    .panel {
+      background: rgba(20,20,34,.95);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 15px;
+    }
+    .section-title { margin: 0 0 6px; font-size: 19px; }
+    .hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    #messages {
+      height: min(48vh, 440px);
+      min-height: 260px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px 0;
+    }
+    .message {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      padding: 12px 14px;
+      border-radius: 14px;
+      line-height: 1.5;
+      max-width: 94%;
+    }
+    .user { align-self: flex-end; background: #44336d; }
+    .assistant { align-self: flex-start; background: #222235; }
+    .composer { display: flex; flex-direction: column; gap: 9px; }
+    textarea {
+      width: 100%;
+      resize: vertical;
+      min-height: 76px;
+      border: 1px solid var(--line);
+      background: #0c0c17;
+      color: var(--text);
+      border-radius: 13px;
+      padding: 13px;
+      outline: none;
+      font-size: 16px;
+    }
+    textarea:focus { border-color: var(--purple); }
+    .primary {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 16px;
+      background: linear-gradient(100deg, #8960ef, #5d8bff);
+      color: white;
+      font-weight: 750;
+      cursor: pointer;
+      min-height: 46px;
+    }
+    button:disabled { opacity: .55; cursor: wait; }
+    .hidden { display: none !important; }
+    #artwork {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin-top: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+    .status { color: var(--cyan); min-height: 22px; font-size: 13px; margin-top: 10px; }
+    .download { display: inline-block; color: var(--cyan); margin-top: 12px; }
+    footer { text-align: center; color: var(--muted); font-size: 12px; padding: 24px 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">PIXEL<span>MIND</span> AI</div>
+    <p>Your ideas. Your imagination. One AI workspace.</p>
+  </header>
+
+  <main>
+    <div class="tabs">
+      <button class="tab active" id="chatTab">💬 AI Chat</button>
+      <button class="tab" id="imageTab">🎨 Image Generator</button>
+    </div>
+
+    <section class="panel" id="chatPanel">
+      <h2 class="section-title">Talk to PixelMind</h2>
+      <p class="hint">Ask questions, brainstorm, write stories, or explore ideas.</p>
+      <div id="messages" aria-live="polite">
+        <div class="message assistant">Hey! 👋 I'm PixelMind AI. What are we creating today?</div>
+      </div>
+      <form id="chatForm" class="composer">
+        <textarea id="chatInput" maxlength="4000" placeholder="Message PixelMind AI..." required></textarea>
+        <button class="primary" id="chatSend" type="submit">Send message ↗</button>
+      </form>
+      <div class="status" id="chatStatus" role="status"></div>
+    </section>
+
+    <section class="panel hidden" id="imagePanel">
+      <h2 class="section-title">Create an image</h2>
+      <p class="hint">Describe the image you want. Include the setting, lighting, mood, and art style.</p>
+      <form id="imageForm" class="composer">
+        <textarea id="imageInput" maxlength="1500" placeholder="A futuristic city above the clouds at sunset, cinematic lighting..." required></textarea>
+        <button class="primary" id="imageSend" type="submit">Generate image ✨</button>
+      </form>
+      <div class="status" id="imageStatus" role="status"></div>
+      <img id="artwork" class="hidden" alt="AI-generated artwork">
+      <a id="downloadImage" class="download hidden" download="pixelmind-artwork.png">Save generated image</a>
+    </section>
+  </main>
+
+  <footer>PixelMind AI · Creative tools powered by AI</footer>
+
+  <script>
+    // IMPORTANT: Replace this with your deployed Cloudflare Worker URL.
+    const API_URL = "PASTE_YOUR_CLOUDFLARE_WORKER_URL_HERE";
+
+    const $ = id => document.getElementById(id);
+    const history = [];
+
+    function showTab(which) {
+      const chat = which === "chat";
+      $("chatPanel").classList.toggle("hidden", !chat);
+      $("imagePanel").classList.toggle("hidden", chat);
+      $("chatTab").classList.toggle("active", chat);
+      $("imageTab").classList.toggle("active", !chat);
+    }
+    $("chatTab").addEventListener("click", () => showTab("chat"));
+    $("imageTab").addEventListener("click", () => showTab("image"));
+
+    function addMessage(text, role) {
+      const el = document.createElement("div");
+      el.className = "message " + role;
+      el.textContent = text;
+      $("messages").appendChild(el);
+      $("messages").scrollTop = $("messages").scrollHeight;
+    }
+
+    async function callAPI(payload) {
+      if (API_URL.includes("PASTE_YOUR")) {
+        throw new Error("Connect your Cloudflare Worker first. Follow the setup steps below the code.");
+      }
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "The AI request failed.");
+      return data;
+    }
+
+    $("chatForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const prompt = $("chatInput").value.trim();
+      if (!prompt) return;
+      $("chatInput").value = "";
+      addMessage(prompt, "user");
+      history.push({ role: "user", content: prompt });
+      $("chatSend").disabled = true;
+      $("chatStatus").textContent = "PixelMind is thinking…";
+
+      try {
+        const data = await callAPI({ action: "chat", messages: history.slice(-12) });
+        const answer = data.reply || "I didn't receive a response. Try again.";
+        addMessage(answer, "assistant");
+        history.push({ role: "assistant", content: answer });
+        if (history.length > 20) history.splice(0, history.length - 20);
+        $("chatStatus").textContent = "Ready";
+      } catch (error) {
+        addMessage("Couldn't connect: " + error.message, "assistant");
+        history.pop();
+        $("chatStatus").textContent = "Connection problem";
+      } finally {
+        $("chatSend").disabled = false;
+      }
+    });
+
+    $("imageForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const prompt = $("imageInput").value.trim();
+      if (!prompt) return;
+      $("imageSend").disabled = true;
+      $("imageStatus").textContent = "Creating your image… this may take a little while.";
+      $("artwork").classList.add("hidden");
+      $("downloadImage").classList.add("hidden");
+
+      try {
+        const data = await callAPI({ action: "image", prompt });
+        if (!data.image) throw new Error("The image model returned no image.");
+        const imageURL = data.image.startsWith("data:")
+          ? data.image
+          : "data:image/png;base64," + data.image;
+        $("artwork").src = imageURL;
+        $("artwork").classList.remove("hidden");
+        $("downloadImage").href = imageURL;
+        $("downloadImage").classList.remove("hidden");
+        $("imageStatus").textContent = "Image created! ✨";
+      } catch (error) {
+        $("imageStatus").textContent = "Couldn't generate image: " + error.message;
+      } finally {
+        $("imageSend").disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
